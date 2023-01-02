@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Avto filtri</title>
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		function requestComplete(e){
+		}
+
+		function sendTable(){
+			var table = document.getElementById("filter_table");
+			var tableData = [];
+			for(var i = 1; i < table.rows.length; i++){
+				tableData.push(
+					{"znamka": table.rows[i].cells[0].innerHTML,
+					 "model": table.rows[i].cells[1].innerHTML,
+					 "cena_od": table.rows[i].cells[2].innerHTML,
+					 "cena_do": table.rows[i].cells[3].innerHTML,
+					 "letnik_od": table.rows[i].cells[4].innerHTML,
+					 "letnik_do": table.rows[i].cells[5].innerHTML,
+					}
+				);
+			}
+
+
+			url='{{url_root}}filter/{{user_id}}';
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', url);
+			xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			xhr.onload = requestComplete;
+			xhr.send(JSON.stringify(tableData));
+		}
+
+		function getTable(){
+			const Http = new XMLHttpRequest();
+			const url='{{url_root}}filter/{{user_id}}';
+			Http.open("GET", url);
+			Http.send();
+
+			Http.onload = (e) => {
+				var table = document.getElementById("filter_table");
+				while(table.rows.length > 1){
+					table.deleteRow(table.rows.length - 1);
+				}
+				var data = JSON.parse(Http.responseText).data;
+				for(var i = 0; i < data.length; i++){
+
+					newCell(data[i]);
+				}
+			}
+		}
+		function newCell(data){
+			var table = document.getElementById("filter_table");
+			for(var i = 1; i < table.rows.length; i++){
+				var empty = true;
+				for(var j = 0; j < 6; j++){
+					if(table.rows[i].cells[j].innerHTML.length != 0){
+						empty = false;
+					}
+				}
+				if(empty) return;
+			}
+
+			if(table.rows.length >= 20) return;
+			var row = table.insertRow(table.rows.length);
+
+			var znamka = row.insertCell(0);
+			znamka.innerHTML = (data == undefined)?"":data["znamka"];
+			znamka.setAttribute("contenteditable", "true");
+
+			var model = row.insertCell(1);
+			model.innerHTML = (data == undefined)?"":data["model"];
+			model.setAttribute("contenteditable", "true");
+
+
+			var cena_od = row.insertCell(2);
+			cena_od.innerHTML = (data == undefined)?"":data["cena_od"];
+			cena_od.setAttribute("contenteditable", "true");
+			cena_od.setAttribute("class", "onlynumber");
+
+			var cena_do = row.insertCell(3);
+			cena_do.innerHTML = (data == undefined)?"":data["cena_do"];
+			cena_do.setAttribute("contenteditable", "true");
+			cena_do.setAttribute("class", "onlynumber");
+
+			var letnik_od = row.insertCell(4);
+			letnik_od.innerHTML = (data == undefined)?"":data["letnik_od"];
+			letnik_od.setAttribute("contenteditable", "true");
+			letnik_od.setAttribute("class", "onlynumber");
+
+			var letnik_do = row.insertCell(5);
+			letnik_do.innerHTML = (data == undefined)?"":data["letnik_do"];
+			letnik_do.setAttribute("contenteditable", "true");
+			letnik_do.setAttribute("class", "onlynumber");
+
+			var deleteButton = row.insertCell(6);
+			var slika = document.createElement("img");
+			slika.setAttribute("src", "https://cdn.pixabay.com/photo/2012/04/13/00/21/button-31222_960_720.png");
+			slika.setAttribute("style", "width=30px; height:30px; display: block; margin-left: auto; margin-right: auto;");
+			deleteButton.appendChild(slika);
+			deleteButton.setAttribute("style", "border: 0px solid red; background-color: white;");
+			deleteButton.onclick = function(x) {
+				document.getElementById("filter_table").deleteRow(this.parentElement.rowIndex);
+			}
+
+			$(".onlynumber").keypress(function(e) {
+				if (isNaN(String.fromCharCode(e.which))) e.preventDefault();
+			});
+		}
+	</script>
+
+	<style>
+		#filter_table {
+			font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+			border-collapse: collapse;
+			width: 50%;
+		}
+
+		#filter_table td, #filter_table th {
+			border: 1px solid black;
+			padding: 2px;
+			text-align: center;
+		}
+
+		#filter_table tr:nth-child(even){background-color: #f2f2f2;}
+
+		#filter_table tr:hover {background-color: #ddd;}
+
+		#filter_table th {
+			padding-top: 12px;
+			padding-bottom: 12px;
+			text-align: center;
+			background-color: #4CAF50;
+			color: white;
+		}
+
+		button {
+			background-color: #4CAF50; /* Green */
+			border: none;
+			color: white;
+			padding: 15px 32px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+		}
+	</style>
+
+</head>
+<body onload="getTable();">
+	<h1>Avto filtri</h1>
+
+	<table id="filter_table">
+		<tr>
+			<th>Model</th>
+			<th>Znamka</th>
+			<th>cena_od</th>
+			<th>cena_do</th>
+			<th>letnik_od</th>
+			<th>letnik_do</th>
+		</tr>
+	</table>
+	<br><br>
+	<button onclick="newCell();">Nov filter</button>
+	<br><br>
+	<button onclick="sendTable();">Shrani</button>
+</body>
+</html>
