@@ -3,6 +3,7 @@ import requests
 
 app = Flask(__name__)
 
+
 session = None
 server_addr = 'http://django-service'
 
