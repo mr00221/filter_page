@@ -52,7 +52,6 @@ def filter(user_id):
 	return 'Hello World!'
 
 
-
 @app.route("/filterpage/<user_id>")
 def filterpage(user_id):
 	global session
@@ -60,9 +59,21 @@ def filterpage(user_id):
 		session = requests.Session()
 	return render_template("filter_page.html", url_root=request.url_root, user_id=user_id)
 
+
 @app.route("/pozdrav/<name>")
 def pozdrav(name):
 	return "<h1>Hello " + name + "!</h1>"
+
+
+@app.route("/")
+def probe():
+	print("Probe called")
+	response = app.response_class(
+		response="Call probe",
+		status=200
+	)
+	return response
+
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0', port='5000')

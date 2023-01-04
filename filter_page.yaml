@@ -15,10 +15,22 @@ spec:
         app: filterpage
     spec:
       containers:
-      - name: filterpage
-        image: zeenpc/filterpage:v1
-        ports:
-        - containerPort: 5000
+        - name: scraper
+          image: mr0022/filterpage:latest
+          ports:
+            - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service
