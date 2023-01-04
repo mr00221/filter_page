@@ -15,7 +15,7 @@ spec:
         app: filterpage
     spec:
       containers:
-        - name: scraper
+        - name: filterpage
           image: mr0022/filterpage:latest
           ports:
             - containerPort: 5000
